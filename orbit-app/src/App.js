@@ -1,13 +1,9 @@
-import React from 'react';
-import {
-  BrowserRouter as Router,
-  Route,
-  Switch
-} from 'react-router-dom';
+import React, {useContext} from 'react';
+import {Redirect, BrowserRouter as Router, Route, Switch} from 'react-router-dom';
 import './App.css';
 import AppShell from './AppShell';
-import { AuthProvider } from './context/AuthContext';
-import { FetchProvider } from './context/FetchContext';
+import {AuthContext, AuthProvider} from './context/AuthContext';
+import {FetchProvider} from './context/FetchContext';
 import Account from './pages/Account';
 import Dashboard from './pages/Dashboard';
 import FourOFour from './pages/FourOFour';
@@ -18,62 +14,77 @@ import Settings from './pages/Settings';
 import Signup from './pages/Signup';
 import Users from './pages/Users';
 
+
+export const AuthenticatedRoute = ({children, ...rest}) => {
+    const authContext = useContext(AuthContext);
+    return (
+        <Route {...rest} render={() => (
+            authContext.isAuthenticated() ? (
+                <AppShell>
+                    {children}
+                </AppShell>
+            ) : (
+                <Redirect to='/'/>
+            )
+        )}/>
+    )
+}
+
+
+export const AdminRoute = ({children, ...rest}) => {
+    const authContext = useContext(AuthContext);
+    return (
+        <Route {...rest} render={() => (
+            authContext.isAuthenticated() && authContext.isAdmin() ? (
+                <AppShell>
+                    {children}
+                </AppShell>
+            ) : (
+                <Redirect to='/'/>
+            )
+        )}/>
+    )
+}
+
+
 const AppRoutes = () => {
-  return (
-    <Switch>
-      <Route path="/login">
-        <Login />
-      </Route>
-      <Route path="/signup">
-        <Signup />
-      </Route>
-      <Route exact path="/">
-        <Home />
-      </Route>
-      <Route path="/dashboard">
-        <AppShell>
-          <Dashboard />
-        </AppShell>
-      </Route>
-      <Route path="/inventory">
-        <AppShell>
-          <Inventory />
-        </AppShell>
-      </Route>
-      <Route path="/account">
-        <AppShell>
-          <Account />
-        </AppShell>
-      </Route>
-      <Route path="/settings">
-        <AppShell>
-          <Settings />
-        </AppShell>
-      </Route>
-      <Route path="/users">
-        <AppShell>
-          <Users />
-        </AppShell>
-      </Route>
-      <Route path="*">
-        <FourOFour />
-      </Route>
-    </Switch>
-  );
+    return (
+        <Switch>
+            <Route path="/login" component={Login}/>
+            <Route path="/signup" component={Signup}/>
+            <Route exact path="/" component={Home}/>
+            <AuthenticatedRoute path="/dashboard">
+                <Dashboard/>
+            </AuthenticatedRoute>
+            <AdminRoute path="/inventory">
+                    <Inventory/>
+            </AdminRoute>
+            <AuthenticatedRoute path="/account">
+                    <Account/>
+            </AuthenticatedRoute>
+            <AuthenticatedRoute path="/settings">
+                    <Settings/>
+            </AuthenticatedRoute>
+            <AdminRoute path="/users">
+                    <Users/>
+            </AdminRoute>
+            <Route path="*" component={FourOFour}/>
+        </Switch>
+    );
 };
 
 function App() {
-  return (
-    <Router>
-      <AuthProvider>
-        <FetchProvider>
-          <div className="bg-gray-100">
-            <AppRoutes />
-          </div>
-        </FetchProvider>
-      </AuthProvider>
-    </Router>
-  );
+    return (
+        <Router>
+            <AuthProvider>
+                <FetchProvider>
+                    <div className="bg-gray-100">
+                        <AppRoutes/>
+                    </div>
+                </FetchProvider>
+            </AuthProvider>
+        </Router>
+    );
 }
 
 export default App;

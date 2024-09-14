@@ -1,11 +1,14 @@
-import React, { useState } from 'react';
+import React, {useContext, useState} from 'react';
 import { Form, Formik } from 'formik';
+import {Redirect} from "react-router";
 import * as Yup from 'yup';
 import Card from '../components/common/Card';
 import GradientButton from '../components/common/GradientButton';
 import Hyperlink from '../components/common/Hyperlink';
 import Label from '../components/common/Label';
 import FormInput from '../components/FormInput';
+import {AuthContext} from "../context/AuthContext";
+import {publicFetch} from "../util/fetch";
 import GradientBar from './../components/common/GradientBar';
 import FormError from './../components/FormError';
 import FormSuccess from './../components/FormSuccess';
@@ -23,13 +26,34 @@ const SignupSchema = Yup.object().shape({
 });
 
 const Signup = () => {
+
+  const authContext = useContext(AuthContext);
+
   const [signupSuccess, setSignupSuccess] = useState();
   const [signupError, setSignupError] = useState();
   const [loginLoading, setLoginLoading] = useState(false);
+  const [redirectOnLogin, setRedirectOnLogin] = useState(false);
 
   const submitCredentials = async credentials => {
     try {
       setLoginLoading(true);
+
+      const { data } = await publicFetch.post('signup', credentials);
+      console.log(data);
+
+      authContext.setAuthState(data);
+
+      setSignupSuccess(data.message);
+      setSignupError('');
+      // redirect to the dashboard after successful signup
+      // we can handle it using the React router, we can use some hooks to do it programmatically.
+      // or render the REDIRECT COMPONENT when a successful signup happens.
+
+      setTimeout(() => {
+        setRedirectOnLogin(true);
+      }, 1000);
+
+
     } catch (error) {
       setLoginLoading(false);
       const { data } = error.response;
@@ -40,6 +64,7 @@ const Signup = () => {
 
   return (
     <>
+      {redirectOnLogin && <Redirect to='/dashboard' />}
       <section className="w-1/2 h-screen m-auto p-8 sm:pt-10">
         <GradientBar />
         <Card>
