@@ -1,4 +1,4 @@
-# ReactSecurity - Orbit
+# React Security Demo - Oscar
 
 <p>
   <a href="https://twitter.com/ryanchenkie" target="_blank">
@@ -6,20 +6,18 @@
   </a>
 </p>
 
-👋 Welcome to Orbit! This is a demo app for learning security for React applications. You can find out more at [ReactSecurity.io](https://reactsecurity.io).
+👋 Welcome to Orbit! This is a demo app for React authenticated applications.
 
 ## A Look at the App
 
 Here's the dashboard for the app
 ![orbit dashboard](./images/orbit-dashboard.png)
 
-For a more in-depth tour, check out this video:
-
-[![orbit tour](./images/orbit-tour.jpg)](https://www.youtube.com/watch?v=cTAizIOENZw)
-
 There are two parts to the app in this project: **orbit-app** and **orbit-api**. These are the front end React application and the backend Node API respectively.
 
 ## Install the Dependencies
+
+These applications have been built using old versions of packages, and has not been updated, therefore we should use node version manager (nvm) to get node v16, and then run then application.
 
 We need to install dependencies for both **orbit-app** and **orbit-api**. Change directories into each and install with **npm**.
 
